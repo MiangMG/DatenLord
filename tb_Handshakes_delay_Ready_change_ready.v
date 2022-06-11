@@ -4,7 +4,7 @@
 // Author : 1598491517@qq.com
 // File   : tb_Handshakes_delay_Ready_change_ready.v
 // Create : 2022-06-09 16:34:58
-// Revise : 2022-06-10 22:49:51
+// Revise : 2022-06-11 10:26:22
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 `timescale 1 ns / 1 ps
@@ -19,10 +19,12 @@ wire down_valid;
 wire [7:0]down_data;
 wire up_ready;
 
+reg fake_valid;
 initial begin
 	clk = 1'b0;
 	rst_n = 1'b0;
 	up_valid = 1'b0;
+	fake_valid = 1'b1;
 	up_data = 'd0;
 	down_ready = 1'b0;
 	#35
@@ -46,18 +48,25 @@ initial begin
 	down_ready = 1'b0;
 	#20
 	down_ready = 1'b1;
+	fake_valid = 1'b0;
 	#20
 	down_ready = 1'b0;
+	fake_valid = 1'b0;
 	#20
 	down_ready = 1'b1;
+	fake_valid = 1'b0;
 	#20
 	down_ready = 1'b0;
+	fake_valid = 1'b0;
 	#20
 	down_ready = 1'b1;
+	fake_valid = 1'b1;
 	#20
 	down_ready = 1'b0;
+	fake_valid = 1'b1;
 	#20
 	down_ready = 1'b1;
+	up_valid = 1'b1;
 end
 
 always @(posedge clk)begin
@@ -67,13 +76,15 @@ always @(posedge clk)begin
 	end
 	else if(up_ready && up_valid)begin
 		up_data <= {$random}%256;
-		up_valid <= {$random}%2;
+		up_valid <= fake_valid;
 	end
-	else if (up_valid == 1'b0)begin
-		up_data <= {$random}%256;
-		up_valid <= {$random}%2;
-	end
+	// else if (up_valid == 1'b0)begin
+	// 	up_data <= {$random}%256;
+	// 	up_valid <= {$random}%2;
+	// end
 end
+
+
 
 
 always #10 clk = ~clk;
